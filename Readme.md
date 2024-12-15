@@ -1,6 +1,6 @@
-5# 📚 **Interactive Quiz Application**
+# 📚 **Quiz Application**
 
-Welcome to the **Interactive Quiz Application**! This project is a dynamic and engaging platform that allows users to participate in a quiz, track their progress, and view results with detailed feedback.  
+Welcome to the **Quiz Application**! This project is a dynamic and engaging platform that allows users to participate in a quiz, track their progress, and view results with detailed feedback.  
 
 ## 🚀 **Features**
 
@@ -24,6 +24,23 @@ Welcome to the **Interactive Quiz Application**! This project is a dynamic and e
 
 ---
 
+## 🔗 **API Endpoints Used**
+
+- **POST API**: Store the user answers.
+  ```
+  https://quiz-backend-78kd.onrender.com/api/quiz/answer
+  ```
+- **GET API**: Fetch the stored answers.
+  ```
+  https://quiz-backend-78kd.onrender.com/api/quiz/
+  ```
+- **GET API**: Retrieve the quiz questions.
+  ```
+  https://quiz-backend-78kd.onrender.com/api/quiz/questions
+  ```
+
+---
+
 ## ⚙️ **Installation and Setup**
 
 Follow these steps to set up the project locally:  
@@ -35,7 +52,7 @@ Follow these steps to set up the project locally:
 ### Steps  
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/yourusername/quiz-app.git
+   git clone https://github.com/hariharan138/Quiz-app.git
    cd quiz-app
    ```
 
@@ -110,19 +127,12 @@ Contributions are welcome! If you'd like to enhance the quiz, follow these steps
 
 ---
 
-## 🛡️ **License**
-
-This project is licensed under the MIT License.  
-
----
-
 ## 📢 **Contact**
 
 If you have any questions or feedback, feel free to reach out!  
-- **Email**: hariharan98704.com  
-- **GitHub**: github.com/hariharan138/  
-
+- **Email**: hariharan98704@gmail.com  
+- **GitHub**: https://github.com/hariharan138/  
+- **Portfolio**: https://hariharan13.vercel.app/  
 ---
 
-Enjoy quizzing! 🎉
 
