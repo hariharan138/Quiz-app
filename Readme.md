@@ -77,10 +77,9 @@ Follow these steps to set up the project locally:
 quiz-app/
 ├── public/            # Static assets
 ├── src/
-│   ├── components/    # Reusable React components
-│   ├── styles/        # CSS files
-│   ├── App.js         # Main React application file
-│   ├── Quiz.js        # Core Quiz component
+│   ├── components/    # Reusable React components        
+│   ├── Quiz.css        # CSS files
+│   ├── Quiz.jsx        # Core Quiz component
 │   ├── index.js       # Entry point
 ├── README.md          # Documentation file
 ├── package.json       # Project dependencies and scripts
