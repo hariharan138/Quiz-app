@@ -3,29 +3,34 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Quiz.css';
 
+// Main Quiz component
 export default function Quiz() {
-  const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [validationResult, setValidationResult] = useState([]);
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [resultLoading, setResultLoading] = useState(false);
-  const [startTime, setStartTime] = useState(null);
-  const [userIP, setUserIP] = useState('');
-  const selectedAnswerRef = useRef('');
+  // State variables to manage data and UI flow
+  const [questions, setQuestions] = useState([]); // Stores quiz questions
+  const [answers, setAnswers] = useState([]); // Tracks user's answers
+  const [currentStep, setCurrentStep] = useState(0); // Tracks the current step/question
+  const [validationResult, setValidationResult] = useState([]); // Stores validation of answers
+  const [result, setResult] = useState(null); // Stores the final result
+  const [loading, setLoading] = useState(true); // Manages loading state for fetching questions
+  const [resultLoading, setResultLoading] = useState(false); // Loading state for result submission
+  const [startTime, setStartTime] = useState(null); // Tracks when a question is started
+  const [userIP, setUserIP] = useState(''); // Stores user's IP address
+  const selectedAnswerRef = useRef(''); // Tracks the currently selected answer
 
+  // Effect to fetch quiz questions and user IP when the component loads
   useEffect(() => {
     fetchQuestions();
     fetchUserIP();
   }, []);
 
+  // Effect to set the start time whenever the current step changes
   useEffect(() => {
     if (currentStep > 0 && currentStep <= questions.length) {
       setStartTime(Date.now());
     }
   }, [currentStep, questions.length]);
 
+  // Fetch quiz questions from the backend
   const fetchQuestions = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/quiz/questions');
@@ -33,44 +38,48 @@ export default function Quiz() {
       if (data.error) {
         throw new Error(data.message);
       } else {
-        setQuestions(data.data);
-        setAnswers(new Array(data.data.length).fill(''));
-        setLoading(false);
+        setQuestions(data.data); // Populate the questions
+        setAnswers(new Array(data.data.length).fill('')); // Initialize answers array
+        setLoading(false); // Loading completed
       }
     } catch (error) {
       console.error("Error fetching questions:", error);
-      setLoading(false);
+      setLoading(false); // Stop loading on error
     }
   };
 
+  // Fetch user's IP address using a public API
   const fetchUserIP = async () => {
     try {
       const response = await fetch('https://api.ipify.org?format=json');
       const data = await response.json();
-      setUserIP(data.ip);
+      setUserIP(data.ip); // Set the user's IP
     } catch (error) {
       console.error("Error fetching user IP:", error);
     }
   };
 
+  // Update user's answer for the current question
   const handleAnswer = (option) => {
     const newAnswers = [...answers];
     newAnswers[currentStep - 1] = option;
     setAnswers(newAnswers);
-    selectedAnswerRef.current = option;
+    selectedAnswerRef.current = option; // Store the selected answer
   };
 
+  // Handle the "Next" button click
   const handleNext = async () => {
-    updateAnswer(selectedAnswerRef.current);
+    updateAnswer(selectedAnswerRef.current); // Save the selected answer
 
     if (currentStep === questions.length) {
+      // If the user has answered the last question, submit all answers
       const finalPayload = {
         ipAddress: userIP,
         Answers: answers,
       };
 
       try {
-        setResultLoading(true);
+        setResultLoading(true); // Indicate loading during submission
         const response = await fetch('http://localhost:5000/api/quiz/answer', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -82,17 +91,19 @@ export default function Quiz() {
           throw new Error(result.message);
         }
 
-        fetchResult();
+        fetchResult(); // Fetch and process the result
       } catch (error) {
         console.error("Error submitting final answers:", error);
         setResultLoading(false);
       }
     } else {
+      // Move to the next question
       setCurrentStep((prevStep) => prevStep + 1);
       setStartTime(Date.now());
     }
   };
 
+  // Helper function to update an answer in the answers array
   const updateAnswer = (answer) => {
     if (answer) {
       const updatedAnswers = [...answers];
@@ -101,6 +112,7 @@ export default function Quiz() {
     }
   };
 
+  // Fetch and calculate the quiz result
   const fetchResult = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/quiz/');
@@ -110,6 +122,7 @@ export default function Quiz() {
         throw new Error(data.message || 'Invalid data received');
       }
       
+      // Predefined correct answers (could be dynamic in real scenarios)
       const correctAnswers = [
         "HyperText Markup Language",
         "15",
@@ -117,24 +130,25 @@ export default function Quiz() {
         "Cascading"
       ];
 
+      // Validate answers and calculate the score
       const validation = data.data[0].Answers.map((answer, index) => ({
         question: questions[index]?.Question || "Question not available",
         answer: answer,
         correct: answer === correctAnswers[index],
-        weight: 1,
+        weight: 1, // Assuming equal weight for all questions
       }));
 
       const correctCount = validation.filter((v) => v.correct).length;
       const score = (correctCount / validation.length) * 100;
 
-      setValidationResult(validation);
+      setValidationResult(validation); // Save validation results
       setResult({
         score: Math.round(score),
         correctCount,
         incorrectCount: questions.length - correctCount,
       });
 
-      setCurrentStep(questions.length + 1);
+      setCurrentStep(questions.length + 1); // Move to the result screen
     } catch (error) {
       console.error("Error fetching result:", error);
     } finally {
@@ -142,13 +156,15 @@ export default function Quiz() {
     }
   };
 
+  // Restart the quiz
   const handleStartAgain = () => {
-    setCurrentStep(0);
-    setAnswers(new Array(questions.length).fill(''));
-    setResult(null);
-    setValidationResult([]);
+    setCurrentStep(0); // Reset step
+    setAnswers(new Array(questions.length).fill('')); // Clear answers
+    setResult(null); // Clear results
+    setValidationResult([]); // Reset validation
   };
 
+  // Render loading state
   if (loading) {
     return (
       <div className="quiz-container">
@@ -159,6 +175,7 @@ export default function Quiz() {
     );
   }
 
+  // Render start screen
   if (currentStep === 0) {
     return (
       <div className="quiz-container">
@@ -175,6 +192,7 @@ export default function Quiz() {
     );
   }
 
+  // Render result screen
   if (currentStep > questions.length) {
     if (resultLoading || !result) {
       return (
@@ -216,6 +234,7 @@ export default function Quiz() {
     );
   }
 
+  // Render the current question
   const currentQuestion = questions[currentStep - 1];
 
   return (
@@ -259,4 +278,3 @@ export default function Quiz() {
     </div>
   );
 }
-
